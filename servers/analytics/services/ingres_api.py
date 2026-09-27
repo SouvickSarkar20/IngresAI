@@ -1,6 +1,7 @@
+import os
 import requests
 
-INGRES_API_URL = "https://ingres.iith.ac.in/api/gec/getBusinessDataForUserOpen"
+INGRES_API_URL = os.environ.get("INGRES_API_URL", "https://ingres.iith.ac.in/api/gec/getBusinessDataForUserOpen")
 
 def fetch_raw_data(location: str, year: str, view: str, locuuid: str) -> dict:
     """

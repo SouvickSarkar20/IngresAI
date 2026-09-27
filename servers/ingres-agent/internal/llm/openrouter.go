@@ -27,7 +27,10 @@ func NewOpenRouterProvider() *OpenRouterProvider {
 	if model == "" {
 		model = "meta-llama/llama-3.1-8b-instruct:free"
 	}
-	baseURL := "https://openrouter.ai/api/v1"
+	baseURL := os.Getenv("OPENROUTER_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://openrouter.ai/api/v1"
+	}
 	
 	return &OpenRouterProvider{
 		apiKey:  os.Getenv("OPENROUTER_API_KEY"),

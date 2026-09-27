@@ -66,6 +66,7 @@ func main() {
 			} else {
 				// Fallback for standard Fiber errors
 				var fe *fiber.Error
+				
 				if errors.As(err, &fe) {
 					code = fe.Code
 					message = fe.Message

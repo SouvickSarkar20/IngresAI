@@ -24,6 +24,10 @@ services:
     restart: always
     env_file:
       - ./servers/ingres-agent/.env
+    environment:
+      - OPENROUTER_BASE_URL=http://wiremock:8080/openrouter
+    depends_on:
+      - wiremock
 
   analytics:
     build: ./servers/analytics
@@ -31,6 +35,10 @@ services:
     ports:
       - "8000:8000"
     restart: always
+    environment:
+      - INGRES_API_URL=http://wiremock:8080/ingres/api/gec/getBusinessDataForUserOpen
+    depends_on:
+      - wiremock
 
   frontend:
     build: ./Ingres-Frontend
@@ -54,3 +62,11 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  wiremock:
+    image: wiremock/wiremock:latest
+    container_name: wiremock
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./wiremock:/home/wiremock
