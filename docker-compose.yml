@@ -25,9 +25,9 @@ services:
     env_file:
       - ./servers/ingres-agent/.env
     environment:
-      - OPENROUTER_BASE_URL=http://wiremock:8080/openrouter
+      - OPENROUTER_BASE_URL=http://wiremock-llm:8080/api/v1
     depends_on:
-      - wiremock
+      - wiremock-llm
 
   analytics:
     build: ./servers/analytics
@@ -36,9 +36,9 @@ services:
       - "8000:8000"
     restart: always
     environment:
-      - INGRES_API_URL=http://wiremock:8080/ingres/api/gec/getBusinessDataForUserOpen
+      - INGRES_API_URL=http://wiremock-ingres:8080/api/gec/getBusinessDataForUserOpen
     depends_on:
-      - wiremock
+      - wiremock-ingres
 
   frontend:
     build: ./Ingres-Frontend
@@ -63,10 +63,20 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  wiremock:
+  wiremock-llm:
     image: wiremock/wiremock:latest
-    container_name: wiremock
+    container_name: wiremock-llm
     ports:
-      - "8080:8080"
+      - "8081:8080"
+    command: ["--record-mappings", "--proxy-all", "https://openrouter.ai"]
     volumes:
-      - ./wiremock:/home/wiremock
+      - ./wiremock-llm:/home/wiremock
+
+  wiremock-ingres:
+    image: wiremock/wiremock:latest
+    container_name: wiremock-ingres
+    ports:
+      - "8082:8080"
+    command: ["--record-mappings", "--proxy-all", "https://ingres.iith.ac.in"]
+    volumes:
+      - ./wiremock-ingres:/home/wiremock
