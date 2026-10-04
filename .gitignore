@@ -31,3 +31,4 @@ __pycache__/
 
 tests/fixtures/
 *.json
+tests/golden_queries.csv
