@@ -44,7 +44,11 @@ func (p *GeminiProvider) HandleUserQuery(ctx context.Context, userQuery string, 
 }
 
 func (p *GeminiProvider) callGeminiAPI(userQuery string, previousChats []apitypes.ChatMessage) (string, error) {
-	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s", p.apiKey)
+	baseURL := os.Getenv("GEMINI_BASE_URL")
+	if baseURL == "" {
+		baseURL = "https://generativelanguage.googleapis.com/v1beta"
+	}
+	url := fmt.Sprintf("%s/models/gemini-flash-latest:generateContent?key=%s", baseURL, p.apiKey)
 
 	req := GeminiRequest{
 		SystemInstruction: struct {
@@ -137,9 +141,7 @@ func (p *GeminiProvider) callGeminiAPI(userQuery string, previousChats []apitype
 					Parts []GeminiPart `json:"parts"`
 				}{
 					Role: "model",
-					Parts: []GeminiPart{
-						{FunctionCall: part.FunctionCall},
-					},
+					Parts: gResp.Candidates[0].Content.Parts,
 				})
 
 				// 2) Append the Go backend's tool response

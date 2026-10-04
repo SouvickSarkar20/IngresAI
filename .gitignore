@@ -18,3 +18,16 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Test Recording Data
+mappings/
+recording_checkpoint.json
+tests/failed_request.json
+test_groq.py
+
+# Python/Venv
+__pycache__/
+*.pyc
+
+tests/fixtures/
+*.json

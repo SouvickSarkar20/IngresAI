@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -58,7 +59,13 @@ func FetchGetBusinessData(input FetchGetBusinessDataInput) (interface{}, error) 
 	slog.Info("Fetching business data", "location", input.Location, "year", yearString, "view", viewType)
 
 	payloadBytes, _ := json.Marshal(payload)
-	resp, err := httpclient.Default.Post("https://ingres.iith.ac.in/api/gec/getBusinessDataForUserOpen", "application/json", bytes.NewReader(payloadBytes))
+	baseURL := os.Getenv("INGRES_API_BASE")
+	if baseURL == "" {
+		baseURL = "https://ingres.iith.ac.in"
+	}
+	apiURL := baseURL + "/api/gec/getBusinessDataForUserOpen"
+
+	resp, err := httpclient.Default.Post(apiURL, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch business data: %v", err)
 	}

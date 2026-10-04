@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -68,8 +69,14 @@ func FetchMapBusinessData(input FetchMapBusinessDataInput) (interface{}, error) 
 
 	slog.Info("Fetching MAP data", "location", input.Location, "year", yearString)
 
+	baseURL := os.Getenv("INGRES_API_BASE")
+	if baseURL == "" {
+		baseURL = "https://ingres.iith.ac.in"
+	}
+	apiURL := baseURL + "/api/gec/mapBusinessData"
+
 	payloadBytes, _ := json.Marshal(payload)
-	resp, err := httpclient.Default.Post("https://ingres.iith.ac.in/api/gec/mapBusinessData", "application/json", bytes.NewReader(payloadBytes))
+	resp, err := httpclient.Default.Post(apiURL, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return nil, fmt.Errorf("error fetching map business data: %v", err)
 	}
